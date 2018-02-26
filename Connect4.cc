@@ -112,7 +112,7 @@ int main()
 	 int alp = INT_MIN;
 	 int bet = INT_MAX;
 	 int i = 0;
-	 loc = alphaB(i, 8, alp, bet, p2.max_pl);
+	 loc = alphaB(i, 0, alp, bet, p2.max_pl);
 	 Drop(p2, loc+1);
 	 person++;
       }
@@ -221,11 +221,7 @@ bool Drop(player pl, int loc)
 	 }
       }
    }
-   else
-      cout << "INVALID" << endl;
    return false;
-
-   print();
 }
 
 bool validmove(int loc)
@@ -236,21 +232,44 @@ bool validmove(int loc)
 	 return false;
 }
 
-int alphaB(int j, int d, int alp, int bet, bool maxpl)
+int alphaB(int node, int d, int alp, int bet, bool maxpl)
 {
    int v;
-   if (d == 0)
+   int bestvalmax = INT_MIN;
+   int bestvalmin = INT_MAX;
+   if (d == 5)
       return 4;
    if (maxpl)// maximizing player
    {
-      v = INT_MIN;
+      
       for (int i = 0; i < 7; i++)
       {
-	
+	 if (Grid[i][node] == 'e')
+	 {
+	    v = alphaB(node+i, d+1, alp, bet, false);
+	    bestvalmax = max(bestvalmax, v);
+	    alp = min(alp, bestvalmax);
+	    if (bet <= bestvalmax)
+	       break;
+	 }
       }
+      return bestvalmax;
    }
    else
    {
-
+      
+      for (int i = 0; i < 7; i++)
+      {
+	 if (Grid[i][node] == 'e')
+	 {
+	    v = alphaB(node+1, d+1, alp, bet, true);
+	    bestvalmin = min (bestvalmin, v);
+	    bet = max (bet, bestvalmin);
+	    if (bestvalmin <= alp)
+	       break;
+	 }
+      }
+      return bestvalmin;
+      
    }
 }
